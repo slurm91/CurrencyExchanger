@@ -184,9 +184,9 @@ class CurrencyExchangeInteractor(
 
     private fun calculateCommission(data: CommissionData, sellCurrencyBalance: BigDecimal): BigDecimal {
         return if (data.attemptsCount < data.maxAttemptsCount) {
-            sellCurrencyBalance * BigDecimal("0.007")
-        } else {
             BigDecimal.ZERO
+        } else {
+            sellCurrencyBalance * BigDecimal("0.007")
         }
     }
 

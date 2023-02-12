@@ -14,6 +14,7 @@ import by.vzhilko.currencyexchanger.databinding.FragmentCurrencyExchangeBinding
 import by.vzhilko.currencyexchanger.feature.currencyexchange.di.CurrencyExchangeFragmentComponent
 import by.vzhilko.currencyexchanger.feature.currencyexchange.domain.state.CurrencyExchangeState
 import by.vzhilko.currencyexchanger.feature.currencyexchange.presentation.util.showErrorDialog
+import by.vzhilko.currencyexchanger.feature.currencyexchange.presentation.util.showSuccessfulCurrencyExchangeDialog
 import by.vzhilko.currencyexchanger.feature.currencyexchange.presentation.viewmodel.CurrencyExchangeViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -51,8 +52,8 @@ class CurrencyExchangeFragment : Fragment() {
         //subscribeOnSellCurrencyStateGetting()
         subscribeOnSellCurrenciesListStateGetting()
         subscribeOnReceiveCurrenciesListStateGetting()
-        subscribeReceiveCurrencyBalanceStateGetting()
-        subscribeRefreshBalanceStateGetting()
+        subscribeOnReceiveCurrencyBalanceStateGetting()
+        subscribeOnRefreshBalanceStateGetting()
     }
 
     private fun initCurrencyExchangerView() {
@@ -110,10 +111,10 @@ class CurrencyExchangeFragment : Fragment() {
                             binding.balancesListView.populate(state.value)
                         }
                         is CurrencyExchangeState.Error -> {
-                            /*showErrorDialog(
+                            showErrorDialog(
                                 this@CurrencyExchangeFragment,
                                 state.error.message ?: state.error.toString()
-                            )*/
+                            )
                         }
                         is CurrencyExchangeState.Loading -> {}
                         is CurrencyExchangeState.NoState -> {}
@@ -175,7 +176,7 @@ class CurrencyExchangeFragment : Fragment() {
         }
     }
 
-    private fun subscribeReceiveCurrencyBalanceStateGetting() {
+    private fun subscribeOnReceiveCurrencyBalanceStateGetting() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.receiveCurrencyBalanceStateFlow.collectLatest { state ->
@@ -197,13 +198,13 @@ class CurrencyExchangeFragment : Fragment() {
         }
     }
 
-    private fun subscribeRefreshBalanceStateGetting() {
+    private fun subscribeOnRefreshBalanceStateGetting() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.refreshBalanceStateFlow.collectLatest { state ->
                     when(state) {
                         is CurrencyExchangeState.Success -> {
-                            showErrorDialog(this@CurrencyExchangeFragment, state.value)
+                            showSuccessfulCurrencyExchangeDialog(this@CurrencyExchangeFragment, state.value)
                         }
                         is CurrencyExchangeState.Error -> {
                             showErrorDialog(
