@@ -40,6 +40,12 @@ class SellCurrencyExchangerCellView(
         return balanceInputTextView
     }
 
+    fun populate(data: String) {
+        if (balanceInputTextView.text?.toString() != data) {
+            balanceInputTextView.setText(data)
+        }
+    }
+
     class BalanceInputFilter : InputFilter {
 
         private val balanceRegex: Regex = Regex("^0\$|^[1-9]\\d*|\\d*\\.\\d{0,2}\$")

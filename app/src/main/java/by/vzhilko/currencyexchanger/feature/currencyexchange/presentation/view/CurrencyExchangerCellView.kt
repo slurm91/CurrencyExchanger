@@ -165,7 +165,10 @@ abstract class CurrencyExchangerCellView @JvmOverloads constructor(
     }
 
     fun setCurrency(currency: CurrencyData) {
-        //val position: Int = currenciesListAdapter.getPosition(currency)
+        currencySpinner.post {
+            val position: Int = currenciesListAdapter.getPosition(currency)
+            currencySpinner.setSelection(position)
+        }
     }
 
     fun populate(data: List<CurrencyData>) {

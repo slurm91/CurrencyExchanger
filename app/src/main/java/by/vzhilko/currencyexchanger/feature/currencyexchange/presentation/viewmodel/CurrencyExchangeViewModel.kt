@@ -3,6 +3,7 @@ package by.vzhilko.currencyexchanger.feature.currencyexchange.presentation.viewm
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import by.vzhilko.currencyexchanger.core.util.mapState
+import by.vzhilko.currencyexchanger.core.util.toBigDecimal
 import by.vzhilko.currencyexchanger.feature.currencyexchange.domain.dto.BalanceData
 import by.vzhilko.currencyexchanger.feature.currencyexchange.domain.dto.CurrencyData
 import by.vzhilko.currencyexchanger.feature.currencyexchange.domain.dto.CurrencyExchangeData
@@ -31,8 +32,7 @@ class CurrencyExchangeViewModel(
     val receiveCurrenciesListStateFlow: StateFlow<CurrencyExchangeState<List<CurrencyData>>> = _receiveCurrenciesListStateFlow.asStateFlow()
 
     private val _receiveCurrencyBalanceStateFlow: MutableStateFlow<CurrencyExchangeState<BigDecimal>> = MutableStateFlow(CurrencyExchangeState.NoState)
-    val receiveCurrencyBalanceStateFlow: StateFlow<CurrencyExchangeState<String>> =
-        _receiveCurrencyBalanceStateFlow
+    val receiveCurrencyBalanceStateFlow: StateFlow<CurrencyExchangeState<String>> = _receiveCurrencyBalanceStateFlow
             .asStateFlow()
             .mapState(
                 scope = viewModelScope,
@@ -46,13 +46,15 @@ class CurrencyExchangeViewModel(
     val refreshBalanceStateFlow: SharedFlow<CurrencyExchangeState<String>> = _refreshBalanceStateFlow.asSharedFlow()
 
     private var currencyExchangeData: CurrencyExchangeData? = null
-    private var sellCurrencyBalance: BigDecimal? = null
 
-    //private val _sellCurrencyStateFlow: MutableStateFlow<CurrencyExchangeState<CurrencyData>> = MutableStateFlow(CurrencyExchangeState.NoState)
-    //val sellCurrencyStateFlow: StateFlow<CurrencyExchangeState<CurrencyData>> = _sellCurrencyStateFlow.asStateFlow()
+    private val _sellCurrencyBalanceStateFlow: MutableStateFlow<CurrencyExchangeState<String>> = MutableStateFlow(CurrencyExchangeState.NoState)
+    val sellCurrencyBalanceStateFlow: StateFlow<CurrencyExchangeState<String>> = _sellCurrencyBalanceStateFlow.asStateFlow()
 
-    private var sellCurrency: CurrencyData? = null
-    private var receiveCurrency: CurrencyData? = null
+    private val _sellCurrencyStateFlow: MutableStateFlow<CurrencyExchangeState<CurrencyData>> = MutableStateFlow(CurrencyExchangeState.NoState)
+    val sellCurrencyStateFlow: StateFlow<CurrencyExchangeState<CurrencyData>> = _sellCurrencyStateFlow.asStateFlow()
+
+    private val _receiveCurrencyStateFlow: MutableStateFlow<CurrencyExchangeState<CurrencyData>> = MutableStateFlow(CurrencyExchangeState.NoState)
+    val receiveCurrencyStateFlow: StateFlow<CurrencyExchangeState<CurrencyData>> = _receiveCurrencyStateFlow.asStateFlow()
 
     init {
         getRatesAtFirstTime()
@@ -91,17 +93,22 @@ class CurrencyExchangeViewModel(
     }
 
     fun onSellCurrencyBalanceChanged(balance: String?) {
-        sellCurrencyBalance = if (balance?.isEmpty() == true) null else BigDecimal(balance)
+        _sellCurrencyBalanceStateFlow.value = if (balance != null) {
+            CurrencyExchangeState.Success(balance)
+        } else {
+            CurrencyExchangeState.NoState
+        }
+
         exchangeCurrency()
     }
 
     fun onSellCurrencySelected(currencyData: CurrencyData) {
-        sellCurrency = currencyData
+        _sellCurrencyStateFlow.value = CurrencyExchangeState.Success(currencyData)
         exchangeCurrency()
     }
 
     fun onReceiveCurrencySelected(currencyData: CurrencyData) {
-        receiveCurrency = currencyData
+        _receiveCurrencyStateFlow.value = CurrencyExchangeState.Success(currencyData)
         exchangeCurrency()
     }
 
@@ -109,9 +116,9 @@ class CurrencyExchangeViewModel(
         viewModelScope.launch {
             _receiveCurrencyBalanceStateFlow.value = interactor.exchangeCurrency(
                 currencyExchangeData = currencyExchangeData,
-                sellCurrencyBalance = sellCurrencyBalance,
-                sellCurrency = sellCurrency,
-                receiveCurrency = receiveCurrency
+                sellCurrencyBalance = (_sellCurrencyBalanceStateFlow.value as? CurrencyExchangeState.Success)?.value.toBigDecimal(),
+                sellCurrency = (_sellCurrencyStateFlow.value as? CurrencyExchangeState.Success)?.value,
+                receiveCurrency = (_receiveCurrencyStateFlow.value as? CurrencyExchangeState.Success)?.value
             )
         }
     }
@@ -120,10 +127,10 @@ class CurrencyExchangeViewModel(
         viewModelScope.launch {
             val state: CurrencyExchangeState<String> = interactor.refreshBalance(
                 balancesList = (_balancesDataListStateFlow.value as? CurrencyExchangeState.Success)?.value,
-                sellCurrencyBalance = sellCurrencyBalance,
+                sellCurrencyBalance = (_sellCurrencyBalanceStateFlow.value as? CurrencyExchangeState.Success)?.value.toBigDecimal(),
                 receiveCurrencyBalance = (_receiveCurrencyBalanceStateFlow.value as? CurrencyExchangeState.Success)?.value,
-                sellCurrency = sellCurrency,
-                receiveCurrency = receiveCurrency
+                sellCurrency = (_sellCurrencyStateFlow.value as? CurrencyExchangeState.Success)?.value,
+                receiveCurrency = (_receiveCurrencyStateFlow.value as? CurrencyExchangeState.Success)?.value
             )
             _refreshBalanceStateFlow.emit(state)
             _balancesDataListStateFlow.value = interactor.getBalancesList(currencyExchangeData)

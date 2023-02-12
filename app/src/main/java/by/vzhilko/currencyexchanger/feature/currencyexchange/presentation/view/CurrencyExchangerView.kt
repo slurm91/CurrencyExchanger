@@ -80,8 +80,16 @@ class CurrencyExchangerView @JvmOverloads constructor(
         sellCurrencyExchangerCellView.populate(data)
     }
 
+    fun populateReceiveCurrency(data: CurrencyData) {
+        receiveCurrencyExchangerCellView.setCurrency(data)
+    }
+
     fun populateReceiveCurrenciesList(data: List<CurrencyData>) {
         receiveCurrencyExchangerCellView.populate(data)
+    }
+
+    fun populateSellCurrencyBalance(data: String) {
+        sellCurrencyExchangerCellView.populate(data)
     }
 
     fun populateReceiveCurrencyBalance(data: String) {

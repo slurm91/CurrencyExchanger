@@ -49,8 +49,10 @@ class CurrencyExchangeFragment : Fragment() {
         initSubmitButton()
         subscribeInitializationStateFlowStateGetting()
         subscribeOnBalancesListStateGetting()
-        //subscribeOnSellCurrencyStateGetting()
+        subscribeOnSellCurrencyBalanceStateGetting()
+        subscribeOnSellCurrencyStateGetting()
         subscribeOnSellCurrenciesListStateGetting()
+        subscribeOnReceiveCurrencyListStateGetting()
         subscribeOnReceiveCurrenciesListStateGetting()
         subscribeOnReceiveCurrencyBalanceStateGetting()
         subscribeOnRefreshBalanceStateGetting()
@@ -124,13 +126,29 @@ class CurrencyExchangeFragment : Fragment() {
         }
     }
 
-    /*private fun subscribeOnSellCurrencyStateGetting() {
+    private fun subscribeOnSellCurrencyBalanceStateGetting() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.sellCurrencyBalanceStateFlow.collectLatest { state ->
+                    when(state) {
+                        is CurrencyExchangeState.Success -> {
+                            binding.currencyExchangerView.populateSellCurrencyBalance(state.value)
+                        }
+                        is CurrencyExchangeState.Error -> {}
+                        is CurrencyExchangeState.Loading -> {}
+                        is CurrencyExchangeState.NoState -> {}
+                    }
+                }
+            }
+        }
+    }
+
+    private fun subscribeOnSellCurrencyStateGetting() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.sellCurrencyStateFlow.collectLatest { state ->
                     when(state) {
                         is CurrencyExchangeState.Success -> {
-                            //binding.currencyExchangerView.populateSellCurrenciesList(state.value)
                             binding.currencyExchangerView.populateSellCurrency(state.value)
                         }
                         is CurrencyExchangeState.Error -> {}
@@ -140,7 +158,7 @@ class CurrencyExchangeFragment : Fragment() {
                 }
             }
         }
-    }*/
+    }
 
     private fun subscribeOnSellCurrenciesListStateGetting() {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -149,6 +167,23 @@ class CurrencyExchangeFragment : Fragment() {
                     when(state) {
                         is CurrencyExchangeState.Success -> {
                             binding.currencyExchangerView.populateSellCurrenciesList(state.value)
+                        }
+                        is CurrencyExchangeState.Error -> {}
+                        is CurrencyExchangeState.Loading -> {}
+                        is CurrencyExchangeState.NoState -> {}
+                    }
+                }
+            }
+        }
+    }
+
+    private fun subscribeOnReceiveCurrencyListStateGetting() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.receiveCurrencyStateFlow.collectLatest { state ->
+                    when(state) {
+                        is CurrencyExchangeState.Success -> {
+                            binding.currencyExchangerView.populateReceiveCurrency(state.value)
                         }
                         is CurrencyExchangeState.Error -> {}
                         is CurrencyExchangeState.Loading -> {}
