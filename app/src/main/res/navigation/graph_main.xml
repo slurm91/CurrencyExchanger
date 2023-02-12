@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/graph_app"
+    app:startDestination="@id/currencyExchangeFragment">
+
+    <fragment
+        android:id="@+id/currencyExchangeFragment"
+        android:name="by.vzhilko.currencyexchanger.feature.currencyexchange.presentation.fragment.CurrencyExchangeFragment"
+        android:label="CurrencyExchangeFragment" >
+        <action
+            android:id="@+id/action_currencyExchangeFragment_to_defaultDialogFragment"
+            app:destination="@id/defaultDialogFragment" />
+    </fragment>
+
+    <dialog
+        android:id="@+id/defaultDialogFragment"
+        android:name="by.vzhilko.currencyexchanger.core.ui.dialog.DefaultDialogFragment"
+        android:label="DefaultDialogFragment" />
+
+</navigation>

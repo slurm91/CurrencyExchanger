@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">CurrencyExchanger</string>
+    <string name="balances_list_title">My Balances</string>
+    <string name="currency_exchanger_title">Currency Exchange</string>
+    <string name="currency_exchanger_cell_sell_title">Sell</string>
+    <string name="currency_exchanger_cell_receive_title">Receive</string>
+    <string name="submit_caption">Submit</string>
+    <string name="ok_caption">OK</string>
+    <string name="successful_currency_exchange_title">Currency converted</string>
+    <string name="successful_currency_exchange_message">You have converted %s to %s. Commission Fee - %s.</string>
+    <string name="sell_currency_and_receive_currency_equality_error_message">
+        Sell currency and buy currency must be different.
+    </string>
+    <string name="currency_exchange_calculation_default_error">It was failed to calculate currency exchange.</string>
+    <string name="balance_refresh_default_error">It was failed to refresh balance.</string>
+    <string name="balances_list_loading_default_error">It was failed to load balances.</string>
 </resources>
